@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<meta charset="UTF-8">
+
+<style>
+    input {
+        width: 100%;
+    }
+
+    span {
+        display: block;
+        overflow: hidden;
+        padding-right: 10px;
+    }
+
+    button {
+        float: right;
+        color: coral;
+    }
+
+    #content {
+        width: 60%;
+        margin-left: 20%;
+        margin-top: 100px;
+    }
+</style>
+
+<head>
+</head>
+
+<body>
+    <div id="content">
+        <span>
+            <input id="text" type="text" value="Здравствуйте, меня зовут Milena. Я – русский голос системы.">
+        </span>
+        <select id="select"></select>
+        <button id="button">Speak!</button>
+    </div>
+</body>
+<script>
+    function getInputText() {
+        return document.getElementById("text").value;
+    }
+
+    function getSelectedVoice() {
+        var selectedVoiceName = document.getElementById("select").selectedOptions[0].getAttribute("data-name");
+
+        return window.speechSynthesis.getVoices().find((voice) => { return voice.name === selectedVoiceName });
+    }
+
+    function makeVoiceLabel(voice) {
+        return `${voice.name} (${voice.lang})`;
+    }
+
+    function populateSelect(selectedVoiceName) {
+        var select = document.getElementById("select");
+
+        window.speechSynthesis.getVoices().forEach((voice) => {
+            var option = document.createElement('option');
+
+            option.textContent = makeVoiceLabel(voice);
+            option.setAttribute('data-lang', voice.lang);
+            option.setAttribute('data-name', voice.name);
+
+            select.appendChild(option);
+
+            if (voice.name === selectedVoiceName) {
+                select.value = makeVoiceLabel(voice);
+            }
+        });
+    };
+
+    document.getElementById("button").onclick = function () {
+        var utterance = new SpeechSynthesisUtterance(getInputText());
+        utterance.voice = getSelectedVoice();
+        window.speechSynthesis.speak(utterance);
+    }
+
+    populateSelect("Milena");
+</script>
+
+</html>
